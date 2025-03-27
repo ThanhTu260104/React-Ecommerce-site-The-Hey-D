@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# React E-commerce Site - The Hey-D
 
-## Getting Started
+## 📝 Giới thiệu
+Ứng dụng thương mại điện tử được xây dựng với các công nghệ hiện đại như **Next.js**, **React**, **Redux**, **TailwindCSS** và **MySQL**.
 
-First, run the development server:
+## 🛠 Công nghệ sử dụng
+- **Next.js** - Framework React cho SSR và tối ưu hiệu suất
+- **React** - Thư viện UI hàng đầu
+- **Redux** - Quản lý state toàn cục
+- **TailwindCSS** - Framework CSS tiện lợi
+- **MySQL** - Cơ sở dữ liệu quan hệ
+- **Node.js & Express** - Backend API server
 
+## ⚙️ Cài đặt và Chạy
+
+### Backend
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd backend
+npm install
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Frontend 
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔌 API Endpoints
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Loại Sản Phẩm
+- `GET /api/loai` - Lấy tất cả loại sản phẩm
+- `GET /api/loai/:id` - Chi tiết loại sản phẩm
 
-## Learn More
+### Sản Phẩm
+- `GET /api/sanpham` - Danh sách sản phẩm (có phân trang)
+- `GET /api/sp/:id` - Chi tiết sản phẩm
+- `GET /api/timkiem/:tu_khoa/:page?` - Tìm kiếm sản phẩm
 
-To learn more about Next.js, take a look at the following resources:
+### Đơn Hàng
+- `POST /api/luudonhang` - Lưu đơn hàng
+- `POST /api/luugiohang` - Lưu giỏ hàng
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📁 Cấu trúc Project
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Backend
+```
+backend/
+├── config/
+│   └── database.js
+├── models/
+├── routes/
+└── index.js
+```
 
-## Deploy on Vercel
+### Frontend
+```
+frontend/
+├── pages/
+├── components/
+└── store/
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 👤 Liên hệ
+- **Tác giả:** Tran Thanh Tu
+- **GitHub:** [ThanhTu260104](https://github.com/ThanhTu260104)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🚀 Triển khai
+- [Hướng dẫn triển khai trên Vercel](https://vercel.com/docs/frameworks/nextjs)
+- [Hướng dẫn triển khai trên Heroku](https://devcenter.heroku.com/articles/deploying-nodejs)
