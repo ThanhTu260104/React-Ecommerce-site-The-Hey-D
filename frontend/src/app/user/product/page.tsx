@@ -31,7 +31,7 @@ export default function SanPhamList() {
 
     fetchSanPhams();
   }, [page, limit, category, sort, hot]);
-  // Fetch danh mục
+
   useEffect(() => {
     const fetchCategories = async () => {
       const res = await fetch("http://localhost:3005/api/loai");
@@ -41,6 +41,7 @@ export default function SanPhamList() {
 
     fetchCategories();
   }, []);
+
   const updateQuery = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams);
     params.set(key, value);
@@ -48,135 +49,142 @@ export default function SanPhamList() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Banner Section */}
-      <div className="relative w-full h-64 md:h-80 mb-10 rounded-xl overflow-hidden">
-        <Image
-          src="/images/product-banner.jpg"
-          alt="Sản phẩm banner"
-          layout="fill"
-          objectFit="cover"
-          className="brightness-75"
-        />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6">
+    <main className="min-h-screen bg-gray-50 pt-20">
+      {/* Hero Banner */}
+      <div className="relative w-full h-64">
+        <div className="absolute inset-0">
+          <Image
+            src="https://res.cloudinary.com/dba9gnba5/image/upload/v1743352504/sergey-zolkin-_UeY8aTI6d0-unsplash_1_eqcodl.jpg"
+            alt="Banner sản phẩm"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30"></div>
+        </div>
+        <div className="relative h-full container mx-auto px-4 flex flex-col items-center justify-center text-white">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 text-center">
-            Khám Phá Sản Phẩm
+            Sản Phẩm Của Chúng Tôi
           </h1>
           <p className="text-lg md:text-xl text-center max-w-2xl">
-            Chọn lựa những sản phẩm công nghệ tốt nhất với giá cả hợp lý
+            Khám phá bộ sưu tập đa dạng và chất lượng
           </p>
         </div>
       </div>
 
-      {/* Danh mục nổi bật */}
-      <div className="mb-12">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">
-          Danh Mục Nổi Bật
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {loaiData.slice(0, 4).map((loai) => (
-            <div
-              key={loai.id}
-              onClick={() => updateQuery("category", loai.id)}
-              className="bg-gray-100 rounded-lg p-4 flex flex-col items-center justify-center h-32 hover:bg-blue-100 hover:shadow-md transition cursor-pointer"
-            >
-              <div className="w-12 h-12 bg-blue-500 rounded-full mb-2 flex items-center justify-center">
-                <span className="text-white text-lg">
-                  {loai.ten_loai.charAt(0)}
-                </span>
+      <div className="container mx-auto px-4 py-8">
+        {/* Filter Section */}
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                label: "Danh mục",
+                value: category,
+                onChange: (v: string) => updateQuery("category", v),
+                options: [
+                  { value: "", label: "Tất cả danh mục" },
+                  ...loaiData.map((l) => ({
+                    value: l.id.toString(),
+                    label: l.ten_loai,
+                  })),
+                ],
+              },
+              {
+                label: "Sắp xếp",
+                value: sort,
+                onChange: (v: string) => updateQuery("sort", v),
+                options: [
+                  { value: "", label: "Mặc định" },
+                  { value: "asc", label: "Giá tăng dần" },
+                  { value: "desc", label: "Giá giảm dần" },
+                ],
+              },
+              {
+                label: "Tình trạng",
+                value: hot,
+                onChange: (v: string) => updateQuery("hot", v),
+                options: [
+                  { value: "", label: "Tất cả" },
+                  { value: "1", label: "Sản phẩm Hot" },
+                  { value: "0", label: "Sản phẩm Thường" },
+                ],
+              },
+            ].map((filter, idx) => (
+              <div key={idx} className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">
+                  {filter.label}
+                </label>
+                <select
+                  value={filter.value}
+                  onChange={(e) => filter.onChange(e.target.value)}
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50"
+                >
+                  {filter.options.map((opt, i) => (
+                    <option key={i} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <span className="font-medium text-center">{loai.ten_loai}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <h2 className="text-3xl font-bold text-gray-800 mb-8">
-        Danh sách sản phẩm
-      </h2>
-
-      {/* Bộ lọc */}
-      <div className="flex flex-col md:flex-row gap-4 mb-8">
-        <select
-          onChange={(e) => updateQuery("category", e.target.value)}
-          value={category}
-          className="px-4 py-2 border rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-        >
-          <option value="">Tất cả danh mục</option>
-          {loaiData.map((loai) => (
-            <option key={loai.id} value={loai.id}>
-              {loai.ten_loai}
-            </option>
-          ))}
-          {/* <option value="1">Điện thoại</option>
-          <option value="2">Laptop</option>
-          <option value="3">Phụ kiện</option> */}
-        </select>
-
-        <select
-          onChange={(e) => updateQuery("sort", e.target.value)}
-          value={sort}
-          className="px-4 py-2 border rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-        >
-          <option value="">Mặc định</option>
-          <option value="asc">Giá tăng dần</option>
-          <option value="desc">Giá giảm dần</option>
-        </select>
-        <select
-          onChange={(e) => updateQuery("hot", e.target.value)}
-          value={hot}
-          className="px-4 py-2 border rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-        >
-          {" "}
-          <option value="">Mặc định</option>
-          <option value="1">Sản phẩm Hot</option>
-          <option value="0">Sản phẩm Old</option>
-        </select>
-      </div>
-
-      {/* Danh sách sản phẩm */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {sanPhamData.map((sp) => (
-          <Show1Product key={sp.id} item={sp} />
-        ))}
-      </div>
-
-      {/* Lời nhắn khuyến mãi */}
-      <div className="my-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-8 text-white">
-        <div className="flex flex-col md:flex-row items-center justify-between">
-          <div className="mb-6 md:mb-0">
-            <h3 className="text-2xl font-bold mb-2">Ưu đãi đặc biệt!</h3>
-            <p className="text-lg">
-              Đăng ký nhận thông báo để không bỏ lỡ các khuyến mãi mới nhất
-            </p>
+            ))}
           </div>
-          <button className="px-6 py-3 bg-white text-blue-600 font-bold rounded-lg hover:bg-gray-100 transition">
-            Đăng ký ngay
+        </div>
+
+        {/* Product Grid */}
+        <div className="mb-12">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+            {sanPhamData.map((sp) => (
+              <Show1Product key={sp.id} item={sp} />
+            ))}
+          </div>
+        </div>
+
+        {/* Pagination */}
+        <div className="flex justify-center items-center gap-4 py-8">
+          <button
+            onClick={() =>
+              updateQuery("page", Math.max(1, Number(page) - 1).toString())
+            }
+            disabled={page === "1"}
+            className="px-5 py-2 bg-gray-800 text-white rounded-lg disabled:bg-gray-300 hover:bg-gray-700 transition-colors"
+          >
+            <i className="fas fa-chevron-left mr-2"></i>
+            Trước
+          </button>
+          <span className="px-6 py-2 bg-white rounded-lg shadow-sm font-medium">
+            Trang {page}
+          </span>
+          <button
+            onClick={() => updateQuery("page", (Number(page) + 1).toString())}
+            className="px-5 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            Sau
+            <i className="fas fa-chevron-right ml-2"></i>
           </button>
         </div>
+
+        {/* Newsletter Section */}
+        <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 mt-12">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="text-white">
+              <h3 className="text-2xl font-bold mb-2">
+                Đăng ký nhận thông tin
+              </h3>
+              <p>Nhận ngay ưu đãi đặc biệt và thông tin sản phẩm mới</p>
+            </div>
+            <div className="flex gap-4">
+              <input
+                type="email"
+                placeholder="Email của bạn"
+                className="px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+              <button className="px-6 py-2 bg-white text-gray-900 font-semibold rounded-lg hover:bg-gray-100 transition-colors">
+                Đăng ký ngay
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-
-      {/* Phân trang */}
-      <div className="flex items-center justify-center gap-4 mt-10">
-        <button
-          onClick={() =>
-            updateQuery("page", Math.max(1, Number(page) - 1).toString())
-          }
-          disabled={page === "1"}
-          className="px-6 py-2 bg-blue-500 text-white rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-600 transition duration-300"
-        >
-          Trang trước
-        </button>
-
-        <span className="text-lg font-medium text-gray-700">Trang {page}</span>
-
-        <button
-          onClick={() => updateQuery("page", (Number(page) + 1).toString())}
-          className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300"
-        >
-          Trang sau
-        </button>
-      </div>
-    </div>
+    </main>
   );
 }

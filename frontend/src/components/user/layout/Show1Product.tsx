@@ -1,3 +1,4 @@
+"use client"
 import { ISanPham } from "../data/Data";
 import Image from "next/image";
 import Link from "next/link";
@@ -42,7 +43,7 @@ export default function Show1Product(props: { item: ISanPham }) {
       {/* Container sản phẩm */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
         {/* Ảnh sản phẩm */}
-        <Link href={`/user/product/${item.id}`}>
+        <Link href={`/user/product-detail/${item.id}`}>
           <div className="relative h-72 overflow-hidden">
             <Image
               src={item.hinh}
@@ -57,7 +58,7 @@ export default function Show1Product(props: { item: ISanPham }) {
         {/* Thông tin sản phẩm */}
         <div className="p-6">
           {/* Tên sản phẩm */}
-          <h3 className="text-lg font-semibold text-gray-800 mb-3 line-clamp-2 hover:text-sky-950 transition-colors duration-300 min-h-[3.5rem]">
+          <h3 className="text-base font-semibold text-gray-800 mb-3 line-clamp-2 hover:text-gray-950 transition-colors duration-300 min-h-[1rem]">
             {item.ten_sp}
           </h3>
 
@@ -98,16 +99,26 @@ export default function Show1Product(props: { item: ISanPham }) {
           </div>
 
           {/* Nút mua hàng */}
-
           <div className="space-y-2">
-            <button
-              onClick={() => dispatch(themSanPham(item))}
-              className="w-full bg-sky-950 hover:bg-sky-800 text-white px-8 py-3 rounded-lg
-                font-semibold transition-all duration-300 transform hover:scale-102 hover:shadow-lg"
-            >
-              <i className="fas fa-shopping-cart mr-2"></i>
-              Mua ngay
-            </button>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => dispatch(themSanPham(item))}
+                className="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg
+                  font-medium transition-all duration-300 flex items-center justify-center"
+              >
+                <i className="fas fa-cart-plus mr-1"></i>
+                Thêm vào giỏ
+              </button>
+
+              <button
+                onClick={() => dispatch(themSanPham(item))}
+                className="bg-gray-950 hover:bg-gray-800 text-white px-3 py-2 rounded-lg
+                  font-medium transition-all duration-300 flex items-center justify-center"
+              >
+                <i className="fas fa-shopping-cart mr-1"></i>
+                Mua ngay
+              </button>
+            </div>
           </div>
         </div>
       </div>

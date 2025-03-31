@@ -34,14 +34,19 @@ export default function PaymentPage() {
   const ghichuRef = useRef<HTMLTextAreaElement>(null);
   const thongbaoRef = useRef<HTMLDivElement>(null);
 
+  const [isSubmitting, setIsSubmitting] = useState(false); // 👈 Thêm state này
+
   //Hàm Submit dữ liệu
   const submitDuLieu = () => {
+    if (isSubmitting) return; // tránh spam khi đang gửi nhiều lần ở nút tạo đơn hàng
+    setIsSubmitting(true);  
     const ht = hotenRef.current?.value;
     const email = emailRef.current?.value;
     if (ht?.trim() == "") {
       thongbaoRef.current!.innerHTML = "Chưa nhập họ tên";
-      hotenRef.current!.style.backgroundColor = "yellow";
+      hotenRef.current!.style.backgroundColor = "gray";
       hotenRef.current!.focus();
+      setIsSubmitting(false); //
       return;
     } else hotenRef.current!.style.backgroundColor = "white";
 
@@ -50,35 +55,51 @@ export default function PaymentPage() {
       body: JSON.stringify({ ho_ten: ht, email: email }),
       headers: { "Content-Type": "application/json" },
     };
+    // Fix API endpoint - use consistent URL format
     fetch("http://localhost:3005/api/luudonhang", opt)
       .then((res) => res.json())
       .then((data) => {
         thongbaoRef.current!.innerHTML = data.thong_bao;
         if (data.dh != undefined) {
           const id_dh = data.dh.id;
-          //luuchitietdonhang(id_dh, listSP);
           const luuchitietdonhang = async (id_dh: number, cart: ICart[]) => {
-            const url = "http://localhost:3000/api/luugiohang";
-            const promises = cart.map((sp) => {
+            const url = "http://localhost:3005/api/luugiohang";
+            let hasError = false;
+
+            const promises = cart.map(async (sp) => {
               const t = { id_dh: id_dh, id_sp: sp.id, so_luong: sp.so_luong };
-              const opt = {
-                method: "POST",
-                body: JSON.stringify(t),
-                headers: { "Content-Type": "application/json" },
-              };
-              return fetch(url, opt)
-                .then((res) => res.json())
-                .catch(() => console.log("Lỗi lưu sản phẩm", sp));
-            });
+              try {
+                const res = await fetch(url, {
+                  method: "POST",
+                  body: JSON.stringify(t),
+                  headers: { "Content-Type": "application/json" },
+                });
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return await res.json();
+              } catch (error) {
+                hasError = true;
+                console.error("Lỗi lưu sản phẩm:", sp, error);
+                thongbaoRef.current!.innerHTML = "Có lỗi khi lưu chi tiết đơn hàng";
+                return null;
+              }
+            }); 
+
+            //const results = 
             await Promise.all(promises);
-            window.location.href = "/thanh-toan/hoan-tat";
+            if (!hasError) {
+              window.location.href = "/thanh-toan/hoan-tat";
+            }
           };
           luuchitietdonhang(id_dh, listSanPham);
+        } else {
+          setIsSubmitting(false);
+          thongbaoRef.current!.innerHTML = "Không thể tạo đơn hàng";
         }
       })
       .catch((err) => {
-        console.log("Lỗi request lưu dh:", err);
-        thongbaoRef.current!.innerHTML = "Có lỗi gì đó, xem trong log";
+        console.error("Lỗi request lưu đơn hàng:", err);
+        thongbaoRef.current!.innerHTML = "Có lỗi khi lưu đơn hàng";
+        setIsSubmitting(false);
       });
   }; //submitDuLieu
 

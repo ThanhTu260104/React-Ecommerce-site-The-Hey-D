@@ -8,7 +8,8 @@
 import {Provider} from "react-redux"
 import {store} from "../lib/store"
 // import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Quicksand } from "next/font/google";
+
 import "./globals.css";
 
 //import các component chung
@@ -16,14 +17,9 @@ import Header from "../components/user/layout/Header";
 import Footer from "../components/user/layout/Footer";
 
 //import font
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const quicksand = Quicksand({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-quicksand",
 });
 
 // export const metadata: Metadata = {
@@ -46,7 +42,7 @@ export default function RootLayout({
         />
       </head>
       {/* ------------------------------ */}
-      <body className={`${geistSans.variable} ${geistMono.variable} font-sans`}>
+      <body className={`${quicksand.variable} ${quicksand.variable} font-sans`}>
         <div className="bg-gray-100 font-sans min-h-screen flex flex-col">
           <header>
             <Header />
