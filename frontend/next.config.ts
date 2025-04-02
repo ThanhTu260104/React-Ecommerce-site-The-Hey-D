@@ -35,6 +35,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "picsum.photos",
       },
+      {
+        protocol: "https",
+        hostname: "ui-avatars.com",
+      },
     ],
     minimumCacheTTL: 60, // Cache ảnh 60 giây để tối ưu performance
   },

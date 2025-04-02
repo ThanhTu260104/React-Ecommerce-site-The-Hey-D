@@ -2,7 +2,11 @@ export interface ILoai {
   id: number;
   ten_loai: string;
   thu_tu: number;
+  slug: string;
   an_hien: number;
+  created_at: string;
+  updated_at: string;
+  so_san_pham: number;
 }
 export interface ISanPham {
   id: number;

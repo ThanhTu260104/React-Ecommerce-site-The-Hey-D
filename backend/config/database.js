@@ -1,4 +1,5 @@
 const { Sequelize, DataTypes } = require("sequelize");
+
 // Tạo đối tượng kết nối đến database
 const sequelize = new Sequelize("laptop_node", "root", "", {
   host: "localhost",
@@ -11,12 +12,17 @@ const LoaiModel = sequelize.define(
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     ten_loai: { type: DataTypes.STRING, allowNull: false },
+    slug: { type: DataTypes.STRING, allowNull: false, unique: true }, // thêm slug
     thu_tu: { type: DataTypes.INTEGER, defaultValue: 0 },
     an_hien: { type: DataTypes.INTEGER, defaultValue: 0 },
+    created_at: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }, // thêm created_at
+    updated_at: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }, // thêm updated_at
   },
-  { timestamps: false, tableName: "loai" }
+  {
+    tableName: "loai",
+    timestamps: false, // giữ nguyên vì bạn đang quản lý created_at/updated_at trong DB
+  }
 );
-
 // model diễn tả cấu trúc 2 table san_pham
 const SanPhamModel = sequelize.define(
   "san_pham",
@@ -62,6 +68,11 @@ const DonHangModel = sequelize.define(
   },
   { timestamps: false, tableName: "don_hang" }
 );
+
+LoaiModel.hasMany(SanPhamModel, { foreignKey: "id_loai", as: "san_phams" });
+
+SanPhamModel.belongsTo(LoaiModel, { foreignKey: "id_loai" });
+
 // model diễn tả cấu trúc  table don_hang_chi_tiet
 const DonHangChiTietModel = sequelize.define(
   "don_hang_chi_tiet",
