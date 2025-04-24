@@ -6,7 +6,10 @@ import { useDispatch } from "react-redux";
 import { themSanPham } from "@/lib/cartSlice";
 
 // Định dạng giá: 1.234.567đ
-function formatPrice(price: number) {
+function formatPrice(price: number | null | undefined) {
+  if (price === null || price === undefined || isNaN(price)) {
+    return "0đ"; // Return a default value if price is not valid
+  }
   return price.toLocaleString("vi-VN", {
     style: "currency",
     currency: "VND",

@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 // import React, { useEffect, useState } from "react";
 // import Image from "next/image";
 // import Link from "next/link";
@@ -7,6 +9,50 @@
 // import { ISanPham } from "../../components/user/data/Data";
 
 export default function Home() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Authentication check
+  useEffect(() => {
+    const checkAuth = () => {
+      try {
+        // Check sessionStorage instead of localStorage
+        const userAuthString = sessionStorage.getItem('userAuth');
+        if (!userAuthString) {
+          console.log("Admin home: No auth data found in sessionStorage");
+          router.push('/auth/login');
+          return;
+        }
+
+        const userAuth = JSON.parse(userAuthString);
+        console.log("Admin home auth check:", userAuth);
+        
+        if (!userAuth?.token || !userAuth?.info || userAuth?.info?.vai_tro !== 1) {
+          console.log("Admin home: Invalid admin credentials");
+          console.log("vai_tro value:", userAuth?.info?.vai_tro);
+          console.log("vai_tro type:", typeof userAuth?.info?.vai_tro);
+          router.push('/auth/login');
+          return;
+        }
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Admin home auth check error:", error);
+        router.push('/auth/login');
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+        <p className="mt-3 text-gray-600">Đang tải thông tin...</p>
+      </div>
+    </div>;
+  }
  
   return (
     

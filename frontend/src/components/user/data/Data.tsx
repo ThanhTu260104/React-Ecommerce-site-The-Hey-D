@@ -21,6 +21,11 @@ export interface ISanPham {
   hot: string;
   an_hien: string;
   tinh_chat: string;
+  loai: ILoai;
+  slug: string;
+  created_at: string;
+  updated_at: string;
+  thuoc_tinh: IThuocTinh;
 }
 export interface ITinTuc {
   id: number;
@@ -38,4 +43,21 @@ export interface ICart {
   so_luong: number;
   gia_mua: number;
   hinh: string;
+}
+export interface IThuocTinh {
+  id: number;
+  id_sp: number;
+  ram: string | number;
+  cpu: string;
+  dia_cung: string;
+  mau_sac: string;
+  can_nang: string; 
+}
+export interface IUser {
+  id:number;
+  ho_ten:string;
+  email:string;
+  mat_khau:string;
+  vai_tro:number;
+  khoa:boolean;
 }

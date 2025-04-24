@@ -1,6 +1,55 @@
 "use client";
 
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
 export default function DashboardMain() {
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Authentication check
+    useEffect(() => {
+        const checkAuth = () => {
+            try {
+                // Check sessionStorage for userAuth
+                const userAuthString = sessionStorage.getItem('userAuth');
+                if (!userAuthString) {
+                    console.log("Dashboard: No auth data found in sessionStorage");
+                    router.push('/auth/login');
+                    return;
+                }
+
+                const userAuth = JSON.parse(userAuthString);
+                console.log("Dashboard auth check:", userAuth);
+                
+                // Verify admin privileges
+                if (!userAuth?.token || !userAuth?.info || userAuth?.info?.vai_tro !== 1) {
+                    console.log("Dashboard: Invalid admin credentials");
+                    console.log("vai_tro value:", userAuth?.info?.vai_tro);
+                    console.log("vai_tro type:", typeof userAuth?.info?.vai_tro);
+                    router.push('/auth/login');
+                    return;
+                }
+
+                setIsLoading(false);
+            } catch (error) {
+                console.error("Dashboard auth check error:", error);
+                router.push('/auth/login');
+            }
+        };
+
+        checkAuth();
+    }, [router]);
+
+    if (isLoading) {
+        return <div className="flex items-center justify-center h-screen">
+            <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+                <p className="mt-3 text-gray-600">Đang tải thông tin...</p>
+            </div>
+        </div>;
+    }
+
     return (
         <main className="flex-1 overflow-y-auto">
             {/* Header */}

@@ -7,7 +7,7 @@ const menuItems = [
   { href: "/admin/dashboard", label: "Tổng quan", icon: "fas fa-chart-pie" },
   { href: "/admin/nguoi-dung", label: "Người dùng", icon: "fas fa-users" },
   { href: "/admin/category", label: "Danh mục sản phẩm", icon: "fas fa-th-large" },
-  { href: "/admin/san-pham", label: "Sản phẩm", icon: "fas fa-box" },
+  { href: "/admin/product", label: "Sản phẩm", icon: "fas fa-box" },
   { href: "/admin/danh-muc-tin", label: "Danh mục tin tức", icon: "fas fa-list" },
   { href: "/admin/tin-tuc", label: "Tin tức", icon: "fas fa-newspaper" },
   { href: "/admin/don-hang", label: "Đơn hàng", icon: "fas fa-shopping-cart" },

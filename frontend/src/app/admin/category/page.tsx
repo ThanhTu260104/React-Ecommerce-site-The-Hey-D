@@ -2,18 +2,54 @@
 import { useState, useEffect } from "react";
 import { ILoai } from "@/components/user/data/Data";
 import Pagination from "@/components/admin/layout/Pagination";
+import { useRouter } from 'next/navigation';
 
 export default function CategoryPage() {
+  const router = useRouter();
   const [categories, setCategories] = useState<ILoai[]>([]);
   const [keyword, setKeyword] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const limit = 15;
+  const [token, setToken] = useState<string | null>(null);
 
   const [showModal, setShowModal] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [selectedName, setSelectedName] = useState<string | null>(null);
+
+  // Check authentication on component mount
+  useEffect(() => {
+    const checkAuth = () => {
+      try {
+        // Check sessionStorage for userAuth
+        const userAuthString = sessionStorage.getItem('userAuth');
+        if (!userAuthString) {
+          console.log("Category: No auth data found in sessionStorage");
+          router.push('/auth/login');
+          return null;
+        }
+
+        const userAuth = JSON.parse(userAuthString);
+        
+        // Verify admin privileges
+        if (!userAuth?.token || !userAuth?.info || userAuth?.info?.vai_tro !== 1) {
+          console.log("Category: Invalid admin credentials");
+          router.push('/auth/login');
+          return null;
+        }
+
+        return userAuth.token;
+      } catch (error) {
+        console.error("Category auth check error:", error);
+        router.push('/auth/login');
+        return null;
+      }
+    };
+
+    const authToken = checkAuth();
+    setToken(authToken);
+  }, [router]);
 
   const showDeleteModal = (id: number, name: string) => {
     setSelectedId(id);
@@ -24,12 +60,28 @@ export default function CategoryPage() {
   const hideDeleteModal = () => setShowModal(false);
 
   const fetchCategories = async () => {
+    if (!token) return; // Don't fetch if no token
+
     try {
       let url = `http://localhost:3005/api/admin/loai?limit=${limit}&page=${page}`;
       if (keyword) url += `&tu_khoa=${encodeURIComponent(keyword)}`;
       if (filterStatus !== "") url += `&an_hien=${filterStatus}`;
 
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!res.ok) {
+        if (res.status === 401) {
+          alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+          router.push('/auth/login');
+          return;
+        }
+        throw new Error('Lỗi khi tải dữ liệu');
+      }
+      
       const result = await res.json();
       setCategories(result.data || []);
       setTotalItems(result.total || 0);
@@ -39,14 +91,19 @@ export default function CategoryPage() {
   };
 
   useEffect(() => {
-    fetchCategories();
-  }, [keyword, filterStatus, page]);
+    if (token) {
+      fetchCategories();
+    }
+  }, [keyword, filterStatus, page, token]);
 
   const handleDelete = async () => {
-    if (!selectedId) return;
+    if (!selectedId || !token) return;
     try {
       const res = await fetch(`http://localhost:3005/api/loai/${selectedId}`, {
         method: "DELETE",
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
       const data = await res.json();
       alert(data.thong_bao || "Đã xóa");
@@ -71,6 +128,18 @@ export default function CategoryPage() {
       date.getMonth() + 1
     )}/${date.getFullYear()}`;
   };
+
+  // Show loading while fetching token
+  if (!token) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-3 text-gray-600">Đang kiểm tra quyền truy cập...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex">
